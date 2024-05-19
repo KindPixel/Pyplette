@@ -12,6 +12,7 @@ audio_filename = "./sounds/output.wav"
 
 # response = chat_with_gemini("Quelle est la voiture la plus chère du monde ?")
 # response = chat_with_gpt("Quelle est la voiture la plus chère du monde ?")
+response = chat_with_huggingface("Quelle est la voiture la plus chère du monde ?")
 
 
 print("Chat response:", response)

@@ -48,3 +48,15 @@ def chat_with_gemini(prompt):
         print(f"Error: {e}")
         print(response.text)
         return "Failed to get a response from the API."
+
+
+def chat_with_huggingface(prompt):
+    api_key = os.getenv('HUGGINGFACE_API_KEY')
+    api_url = "https://api-inference.huggingface.co/models/distilgpt2"
+    headers = {"Authorization": "Bearer " + api_key}
+    payload = {
+        "inputs": prompt,
+    }
+
+    response = requests.post(api_url, headers=headers, json=payload)
+    return response.json()
