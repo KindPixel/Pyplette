@@ -1,0 +1,7 @@
+openai-whisper
+pydub
+pyaudio
+keyboard
+python-dotenv
+openai
+requests
