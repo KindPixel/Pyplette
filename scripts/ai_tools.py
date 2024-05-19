@@ -2,6 +2,7 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 import requests
+import time
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -50,13 +51,24 @@ def chat_with_gemini(prompt):
         return "Failed to get a response from the API."
 
 
-def chat_with_huggingface(prompt):
-    api_key = os.getenv('HUGGINGFACE_API_KEY')
-    api_url = "https://api-inference.huggingface.co/models/distilgpt2"
-    headers = {"Authorization": "Bearer " + api_key}
+def generate_text_huggingface(prompt, model):
+    api_url = f"https://api-inference.huggingface.co/models/{model}"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('HUGGINGFACE_API_KEY')}",
+        "Content-Type": "application/json"
+    }
     payload = {
-        "inputs": prompt,
+        "inputs": prompt
     }
 
-    response = requests.post(api_url, headers=headers, json=payload)
-    return response.json()
+    while True:
+        response = requests.post(api_url, headers=headers, json=payload)
+        if response.status_code == 200:
+            result = response.json()
+            return result
+        elif response.status_code == 503 and 'estimated_time' in response.json():
+            wait_time = response.json()['estimated_time']
+            print(f"Model is currently loading. Estimated time: {wait_time} seconds")
+            time.sleep(wait_time + 5)  # Ajouter un petit délai supplémentaire pour garantir que le modèle est prêt
+        else:
+            response.raise_for_status()  # Raise an HTTPError for other bad responses (4xx and 5xx)
